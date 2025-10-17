@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Scanner - Achat Cash Voiture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+         * CSS RESET & BASE STYLES
+         * ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================
+         * CSS CUSTOM PROPERTIES
+         * ============================================ */
+        :root {
+            /* Color System */
+            --color-primary-bg: #0a0e1a;
+            --color-secondary-bg: #1a1f35;
+            --color-accent-neon: #00d9ff;
+            --color-accent-secondary: #0066ff;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #a0b0c0;
+            --color-success: #00ff88;
+            --color-error: #ff3366;
+            
+            /* Spacing Scale (8px grid) */
+            --space-xs: 8px;
+            --space-sm: 16px;
+            --space-md: 24px;
+            --space-lg: 32px;
+            --space-xl: 48px;
+            
+            /* Animation Timings */
+            --transition-fast: 150ms;
+            --transition-normal: 300ms;
+            --transition-slow: 500ms;
+            
+            /* Easing Functions */
+            --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            
+            /* Shadows & Effects */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --glow-primary: 0 0 20px rgba(0, 217, 255, 0.6);
+            --glow-success: 0 0 20px rgba(0, 255, 136, 0.6);
+            --glow-error: 0 0 20px rgba(255, 51, 102, 0.6);
+        }
+
+        /* ============================================
+         * BASE LAYOUT
+         * ============================================ */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--color-primary-bg) 0%, var(--color-secondary-bg) 100%);
+            color: var(--color-text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #game-container {
+            width: 100%;
+            min-height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ============================================
+         * ANIMATED BACKGROUND PATTERN
+         * ============================================ */
+        #background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            #background-pattern {
+                animation: gridMove 20s linear infinite;
+            }
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* ============================================
+         * HEADER SECTION
+         * ============================================ */
+        #header {
+            position: relative;
+            z-index: 10;
+            padding: var(--space-md) var(--space-sm);
+            text-align: center;
+            background: linear-gradient(180deg, rgba(26, 31, 53, 0.9) 0%, transparent 100%);
+        }
+
+        #logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-accent-neon);
+            text-shadow: var(--glow-primary);
+            margin-bottom: var(--space-sm);
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        #title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            cursor: pointer;
+            line-height: 1.3;
+        }
+
+        #subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1.5;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+         * STICKY PROGRESS BAR
+         * ============================================ */
+        #sticky-progress {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(26, 31, 53, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-sm);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            box-shadow: var(--shadow-md);
+        }
+
+        #progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--color-accent-secondary), var(--color-accent-neon));
+            border-radius: 3px;
+            transition: width var(--transition-slow) var(--ease-out);
+            box-shadow: 0 0 10px var(--color-accent-neon);
+        }
+
+        #progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-xs);
+        }
+
+        #progress-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        #progress-percentage {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-accent-neon);
+        }
+
+        /* ============================================
+         * CAR SHOWCASE
+         * ============================================ */
+        #car-showcase {
+            position: relative;
+            height: 200px;
+            margin: var(--space-md) 0;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        #car-carousel {
+            display: flex;
+            height: 100%;
+            gap: var(--space-sm);
+            padding: 0 var(--space-sm);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            cursor: grab;
+            user-select: none;
+        }
+
+        #car-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        #car-carousel.dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+        }
+
+        .car-item {
+            flex: 0 0 280px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            scroll-snap-align: center;
+            border-radius: 12px;
+            background: rgba(26, 31, 53, 0.3);
+            padding: var(--space-sm);
+        }
+
+        .car-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 24px rgba(0, 217, 255, 0.3));
+            transition: transform var(--transition-normal) var(--ease-out);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .car-item:hover img {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Carousel scroll indicators */
+        #car-showcase::after {
+            content: '← Swipe →';
+            position: absolute;
+            bottom: var(--space-xs);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* ============================================
+         * MAIN CONTENT
+         * ============================================ */
+        #main-content {
+            position: relative;
+            z-index: 10;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--space-sm);
+            padding-bottom: 120px; /* Space for FAB */
+        }
+
+        /* ============================================
+         * FORM SECTIONS
+         * ============================================ */
+        .form-section {
+            margin-bottom: var(--space-md);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .form-section {
+                animation: slideIn var(--transition-slow) var(--ease-out) forwards;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .form-section {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section.locked {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .field-container {
+            background: rgba(26, 31, 53, 0.6);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+
+        .field-container:focus-within {
+            border-color: var(--color-accent-neon);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .field-container.scanning::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
+                animation: scan 1s ease-in-out;
+            }
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .field-container.valid {
+            border-color: var(--color-success);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .field-container.invalid {
+            border-color: var(--color-error);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .field-container.invalid {
+                animation: shake var(--transition-normal) var(--ease-out);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .field-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-accent-neon);
+            margin-bottom: var(--space-sm);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .field-input,
+        .field-select,
+        .field-textarea {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px var(--space-sm);
+            background: rgba(10, 14, 26, 0.8);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+
+        .field-input:focus,
+        .field-select:focus,
+        .field-textarea:focus {
+            outline: none;
+            border-color: var(--color-accent-neon);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+            background: rgba(10, 14, 26, 0.95);
+        }
+
+        .field-textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .field-error {
+            color: var(--color-error);
+            font-size: 14px;
+            margin-top: var(--space-xs);
+            display: none;
+            font-weight: 500;
+        }
+
+        .field-container.invalid .field-error {
+            display: block;
+        }
+
+        /* ============================================
+         * FILE UPLOAD
+         * ============================================ */
+        .file-upload-container {
+            position: relative;
+        }
+
+        .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            padding: var(--space-md);
+            background: rgba(10, 14, 26, 0.8);
+            border: 2px dashed rgba(0, 217, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--color-accent-neon);
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .file-upload-text {
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .file-upload-text strong {
+            color: var(--color-accent-neon);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .file-preview {
+            margin-top: var(--space-sm);
+            display: none;
+            position: relative;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-preview img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid var(--color-accent-neon);
+            box-shadow: var(--shadow-md);
+        }
+
+        .file-preview-remove {
+            position: absolute;
+            top: var(--space-xs);
+            right: var(--space-xs);
+            width: 32px;
+            height: 32px;
+            background: var(--color-error);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast) var(--ease-out);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-preview-remove:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow-error);
+        }
+
+        /* ============================================
+         * FLOATING ACTION BUTTON (FAB)
+         * ============================================ */
+        #fab-container {
+            position: fixed;
+            bottom: var(--space-md);
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            z-index: 200;
+            transition: transform var(--transition-normal) var(--ease-out);
+        }
+
+        #fab-container.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #submit-button {
+            min-width: 280px;
+            padding: var(--space-sm) var(--space-xl);
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            background: linear-gradient(135deg, var(--color-accent-secondary), var(--color-accent-neon));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all var(--transition-normal) var(--ease-out);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+        }
+
+        #submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #submit-button:not(:disabled):active {
+            transform: scale(0.98);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            #submit-button:not(:disabled):hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 32px rgba(0, 217, 255, 0.6);
+            }
+
+            #submit-button.ready {
+                animation: pulse 1.5s ease-in-out infinite;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4); }
+            50% { box-shadow: 0 8px 32px rgba(0, 217, 255, 0.8); }
+        }
+
+        /* ============================================
+         * SUCCESS SCREEN
+         * ============================================ */
+        #success-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 26, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: var(--space-md);
+        }
+
+        #success-screen.show {
+            display: flex;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            #success-screen.show {
+                animation: fadeIn var(--transition-slow) var(--ease-out);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-checkmark {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--color-success);
+            position: relative;
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--glow-success);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .success-checkmark {
+                animation: scaleIn var(--transition-slow) var(--ease-bounce);
+            }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            color: var(--color-success);
+            opacity: 0;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .success-checkmark::after {
+                animation: checkAppear var(--transition-normal) var(--ease-out) 0.3s forwards;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .success-checkmark::after {
+                opacity: 1;
+            }
+        }
+
+        @keyframes checkAppear {
+            to { opacity: 1; }
+        }
+
+        .success-message {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            max-width: 90%;
+            opacity: 0;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .success-message {
+                animation: slideIn var(--transition-slow) var(--ease-out) 0.5s forwards;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .success-message {
+                opacity: 1;
+            }
+        }
+
+        /* ============================================
+         * LOADING SPINNER
+         * ============================================ */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--color-accent-neon);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+         * EDIT MODE STYLES
+         * ============================================ */
+        .edit-mode .editable {
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-fast) var(--ease-out);
+        }
+
+        .edit-mode .editable:hover {
+            background: rgba(0, 217, 255, 0.1);
+            outline: 2px dashed var(--color-accent-neon);
+            outline-offset: 4px;
+        }
+
+        .edit-mode .car-item {
+            cursor: pointer;
+        }
+
+        .edit-mode .car-item:hover {
+            outline: 2px dashed var(--color-accent-neon);
+            outline-offset: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="background-pattern"></div>
+        
+        <div id="header">
+            <div id="logo" class="editable" data-config-key="branding.logo">Liberthet</div>
+            <div id="title" class="editable" data-config-key="branding.title">Achat Cash Voiture</div>
+            <div id="subtitle" class="editable" data-config-key="branding.subtitle">Remplis ce rapide formulaire, on te répond sous 24h maximum.</div>
+        </div>
+
+        <div id="sticky-progress">
+            <div id="progress-bar-bg">
+                <div id="progress-bar-fill"></div>
+            </div>
+            <div id="progress-info">
+                <div id="progress-label">Progression du scan</div>
+                <div id="progress-percentage">0%</div>
+            </div>
+        </div>
+
+        <div id="car-showcase">
+            <div id="car-carousel"></div>
+        </div>
+
+        <div id="main-content">
+            <form id="scan-form"></form>
+        </div>
+
+        <div id="fab-container">
+            <button id="submit-button" type="button" disabled>
+                <span id="submit-text">Envoyer ma demande 🚗</span>
+            </button>
+        </div>
+
+        <div id="success-screen">
+            <div class="success-checkmark"></div>
+            <div class="success-message" class="editable" data-config-key="successMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ==================================================
+         * GAME OVERVIEW: Auto Scanner - A gamified car sales form that transforms data collection
+         * into an engaging scanning experience. Users progress through form fields with futuristic
+         * animations, visual feedback, and a cyberpunk aesthetic. Edit mode allows customization
+         * of branding, colors, form fields, and webhook configuration.
+         * 
+         * GAME STATE SHAPE: window.gameConfig = {
+         *   branding: { logo, title, subtitle },
+         *   theme: { primaryBg, secondaryBg, accentNeon, accentSecondary },
+         *   carShowcase: [{ assetId, name }],
+         *   formFields: [{ id, label, type, required, placeholder, options? }],
+         *   webhookUrl: string,
+         *   successMessage: string
+         * }
+         * ==================================================
+         */
+
+        // Asset cache
+        const assetCache = {};
+        let currentMode = 'play';
+        let formData = {};
+        let validFields = new Set();
+        let carouselDragState = {
+            isDragging: false,
+            startX: 0,
+            scrollLeft: 0
+        };
+
+        // Preload all assets
+        function preloadAssets() {
+            const assetIds = [
+                'luxury_car_1', 'luxury_car_2', 'luxury_car_3', 'luxury_car_4',
+                'scan_line_effect', 'holographic_panel',
+                'scan_start_sound', 'field_complete_sound', 'form_submit_sound', 'ambient_background_music'
+            ];
+
+            assetIds.forEach(id => {
+                const assetInfo = lib.getAsset(id);
+                if (assetInfo) {
+                    if (assetInfo.type === 'audio') {
+                        const audio = new Audio();
+                        audio.preload = 'auto';
+                        if (assetInfo.loop === 'true' || assetInfo.loop === true) {
+                            audio.loop = true;
+                            audio.volume = 0.3;
+                        }
+                        audio.src = assetInfo.url;
+                        audio.load();
+                        assetCache[id] = audio;
+                    } else {
+                        const img = new Image();
+                        img.src = assetInfo.url;
+                        assetCache[id] = img;
+                    }
+                }
+            });
+        }
+
+        // Play sound effect
+        function playSound(assetId) {
+            if (assetCache[assetId] && assetCache[assetId] instanceof Audio) {
+                const audio = assetCache[assetId];
+                if (audio.loop) {
+                    audio.play().catch(e => lib.log('Audio play failed: ' + e));
+                } else {
+                    audio.currentTime = 0;
+                    audio.play().catch(e => lib.log('Audio play failed: ' + e));
+                }
+            }
+        }
+
+        // Stop sound
+        function stopSound(assetId) {
+            if (assetCache[assetId] && assetCache[assetId] instanceof Audio) {
+                assetCache[assetId].pause();
+                assetCache[assetId].currentTime = 0;
+            }
+        }
+
+        // Initialize car carousel
+        function initCarousel() {
+            const carousel = document.getElementById('car-carousel');
+            carousel.innerHTML = '';
+
+            window.gameConfig.carShowcase.forEach((car, index) => {
+                const carItem = document.createElement('div');
+                carItem.className = 'car-item';
+                carItem.dataset.index = index;
+
+                const img = document.createElement('img');
+                const assetInfo = lib.getAsset(car.assetId);
+                if (assetInfo) {
+                    img.src = assetInfo.url;
+                    img.alt = car.name;
+                }
+
+                carItem.appendChild(img);
+                carousel.appendChild(carItem);
+
+                if (currentMode === 'edit') {
+                    carItem.addEventListener('click', () => {
+                        lib.editMenu.open({
+                            name: 'Car ' + (index + 1),
+                            params: {
+                                'Name': {
+                                    key: 'gameConfig.carShowcase.' + index + '.name',
+                                    type: 'string',
+                                    onChange: (value) => {
+                                        window.gameConfig.carShowcase[index].name = value;
+                                    }
+                                }
+                            },
+                            onDelete: () => {
+                                if (window.gameConfig.carShowcase.length > 1) {
+                                    window.gameConfig.carShowcase.splice(index, 1);
+                                    initCarousel();
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Setup carousel dragging
+            if (currentMode === 'play') {
+                setupCarouselDrag();
+            }
+        }
+
+        // Carousel drag functionality
+        function setupCarouselDrag() {
+            const carousel = document.getElementById('car-carousel');
+
+            // Mouse events
+            carousel.addEventListener('mousedown', (e) => {
+                carouselDragState.isDragging = true;
+                carousel.classList.add('dragging');
+                carouselDragState.startX = e.pageX - carousel.offsetLeft;
+                carouselDragState.scrollLeft = carousel.scrollLeft;
+            });
+
+            carousel.addEventListener('mouseleave', () => {
+                carouselDragState.isDragging = false;
+                carousel.classList.remove('dragging');
+            });
+
+            carousel.addEventListener('mouseup', () => {
+                carouselDragState.isDragging = false;
+                carousel.classList.remove('dragging');
+            });
+
+            carousel.addEventListener('mousemove', (e) => {
+                if (!carouselDragState.isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - carouselDragState.startX) * 2;
+                carousel.scrollLeft = carouselDragState.scrollLeft - walk;
+            });
+
+            // Touch events
+            carousel.addEventListener('touchstart', (e) => {
+                carouselDragState.isDragging = true;
+                carouselDragState.startX = e.touches[0].pageX - carousel.offsetLeft;
+                carouselDragState.scrollLeft = carousel.scrollLeft;
+            });
+
+            carousel.addEventListener('touchend', () => {
+                carouselDragState.isDragging = false;
+            });
+
+            carousel.addEventListener('touchmove', (e) => {
+                if (!carouselDragState.isDragging) return;
+                const x = e.touches[0].pageX - carousel.offsetLeft;
+                const walk = (x - carouselDragState.startX) * 2;
+                carousel.scrollLeft = carouselDragState.scrollLeft - walk;
+            });
+        }
+
+        // Initialize form
+        function initForm() {
+            const form = document.getElementById('scan-form');
+            form.innerHTML = '';
+            validFields.clear();
+
+            window.gameConfig.formFields.forEach((field, index) => {
+                const section = document.createElement('div');
+                section.className = 'form-section';
+                section.style.animationDelay = (index * 0.1) + 's';
+
+                const container = document.createElement('div');
+                container.className = 'field-container';
+                container.dataset.fieldId = field.id;
+
+                const label = document.createElement('label');
+                label.className = 'field-label editable';
+                label.textContent = field.label + (field.required ? ' *' : '');
+                label.dataset.configKey = 'formFields.' + index + '.label';
+
+                let input;
+                if (field.type === 'select') {
+                    input = document.createElement('select');
+                    input.className = 'field-select';
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Sélectionner...';
+                    input.appendChild(defaultOption);
+
+                    field.options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        input.appendChild(option);
+                    });
+                } else if (field.type === 'textarea') {
+                    input = document.createElement('textarea');
+                    input.className = 'field-textarea';
+                } else if (field.type === 'file') {
+                    const fileContainer = document.createElement('div');
+                    fileContainer.className = 'file-upload-container';
+
+                    input = document.createElement('input');
+                    input.type = 'file';
+                    input.className = 'file-upload-input';
+                    input.id = field.id;
+                    input.accept = 'image/*';
+
+                    const fileLabel = document.createElement('label');
+                    fileLabel.className = 'file-upload-label';
+                    fileLabel.htmlFor = field.id;
+
+                    const fileIcon = document.createElement('div');
+                    fileIcon.className = 'file-upload-icon';
+                    fileIcon.textContent = '📷';
+
+                    const fileText = document.createElement('div');
+                    fileText.className = 'file-upload-text';
+                    fileText.innerHTML = '<strong>Cliquez pour ajouter une photo</strong>ou glissez-déposez ici';
+
+                    fileLabel.appendChild(fileIcon);
+                    fileLabel.appendChild(fileText);
+
+                    const preview = document.createElement('div');
+                    preview.className = 'file-preview';
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'file-preview-remove';
+                    removeBtn.textContent = '×';
+                    removeBtn.type = 'button';
+                    removeBtn.addEventListener('click', () => {
+                        input.value = '';
+                        preview.classList.remove('show');
+                        preview.innerHTML = '';
+                        delete formData[field.id];
+                        validFields.delete(field.id);
+                        container.classList.remove('valid');
+                        updateProgress();
+                    });
+
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                                preview.appendChild(removeBtn);
+                                preview.classList.add('show');
+                                formData[field.id] = event.target.result;
+                                validateField(field, file.name);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    fileContainer.appendChild(input);
+                    fileContainer.appendChild(fileLabel);
+                    fileContainer.appendChild(preview);
+
+                    container.appendChild(label);
+                    container.appendChild(fileContainer);
+                    section.appendChild(container);
+                    form.appendChild(section);
+                    return;
+                } else {
+                    input = document.createElement('input');
+                    input.type = field.type;
+                    input.className = 'field-input';
+                }
+
+                input.id = field.id;
+                input.name = field.id;
+                input.placeholder = field.placeholder || '';
+                input.required = field.required;
+
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'field-error';
+                errorMsg.textContent = 'Ce champ est requis';
+
+                container.appendChild(label);
+                container.appendChild(input);
+                container.appendChild(errorMsg);
+                section.appendChild(container);
+                form.appendChild(section);
+
+                // Add event listeners for validation
+                if (currentMode === 'play') {
+                    input.addEventListener('focus', () => {
+                        container.classList.add('scanning');
+                        playSound('scan_start_sound');
+                        setTimeout(() => {
+                            container.classList.remove('scanning');
+                        }, 1000);
+                        
+                        // Smooth scroll to field
+                        setTimeout(() => {
+                            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                    });
+
+                    // Debounced validation
+                    let validationTimeout;
+                    const debouncedValidate = () => {
+                        clearTimeout(validationTimeout);
+                        validationTimeout = setTimeout(() => {
+                            formData[field.id] = input.value;
+                            validateField(field, input.value);
+                        }, 300);
+                    };
+
+                    input.addEventListener('input', debouncedValidate);
+
+                    input.addEventListener('change', () => {
+                        formData[field.id] = input.value;
+                        validateField(field, input.value);
+                    });
+                }
+
+                // Edit mode click handlers
+                if (currentMode === 'edit') {
+                    label.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        lib.editMenu.open({
+                            name: 'Field: ' + field.label,
+                            params: {
+                                'Label': {
+                                    key: 'gameConfig.formFields.' + index + '.label',
+                                    type: 'string',
+                                    onChange: (value) => {
+                                        window.gameConfig.formFields[index].label = value;
+                                        label.textContent = value + (field.required ? ' *' : '');
+                                    }
+                                },
+                                'Placeholder': {
+                                    key: 'gameConfig.formFields.' + index + '.placeholder',
+                                    type: 'string',
+                                    onChange: (value) => {
+                                        window.gameConfig.formFields[index].placeholder = value;
+                                        input.placeholder = value;
+                                    }
+                                },
+                                'Required': {
+                                    key: 'gameConfig.formFields.' + index + '.required',
+                                    type: 'checkbox',
+                                    onChange: (value) => {
+                                        window.gameConfig.formFields[index].required = value;
+                                        input.required = value;
+                                        label.textContent = field.label + (value ? ' *' : '');
+                                    }
+                                }
+                            },
+                            onDelete: () => {
+                                if (window.gameConfig.formFields.length > 1) {
+                                    window.gameConfig.formFields.splice(index, 1);
+                                    initForm();
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+
+            updateProgress();
+        }
+
+        // Validate field
+        function validateField(field, value) {
+            const container = document.querySelector(`[data-field-id="${field.id}"]`);
+            
+            let isValid = true;
+            if (field.required) {
+                if (field.type === 'email') {
+                    isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                } else if (field.type === 'tel') {
+                    isValid = /^[\d\s\+\-\(\)]+$/.test(value) && value.length >= 10;
+                } else {
+                    isValid = value && value.trim().length > 0;
+                }
+            }
+
+            if (isValid) {
+                container.classList.remove('invalid');
+                container.classList.add('valid');
+                if (!validFields.has(field.id)) {
+                    validFields.add(field.id);
+                    playSound('field_complete_sound');
+                }
+            } else {
+                container.classList.remove('valid');
+                if (value && value.length > 0) {
+                    container.classList.add('invalid');
+                }
+                validFields.delete(field.id);
+            }
+
+            updateProgress();
+        }
+
+        // Update progress bar and FAB
+        function updateProgress() {
+            const requiredFields = window.gameConfig.formFields.filter(f => f.required);
+            const validRequiredFields = requiredFields.filter(f => validFields.has(f.id));
+            const percentage = requiredFields.length > 0 
+                ? Math.round((validRequiredFields.length / requiredFields.length) * 100)
+                : 0;
+
+            const progressFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const submitButton = document.getElementById('submit-button');
+            const fabContainer = document.getElementById('fab-container');
+
+            progressFill.style.width = percentage + '%';
+            progressPercentage.textContent = percentage + '%';
+
+            if (percentage === 100) {
+                submitButton.disabled = false;
+                submitButton.classList.add('ready');
+                fabContainer.classList.add('show');
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.remove('ready');
+                fabContainer.classList.remove('show');
+            }
+        }
+
+        // Submit form
+        async function submitForm() {
+            const submitButton = document.getElementById('submit-button');
+            const submitText = document.getElementById('submit-text');
+            const originalText = submitText.textContent;
+            
+            submitButton.disabled = true;
+            submitText.innerHTML = '<span class="spinner"></span> Envoi en cours...';
+
+            try {
+                const response = await fetch(window.gameConfig.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    playSound('form_submit_sound');
+                    stopSound('ambient_background_music');
+                    
+                    const successScreen = document.getElementById('success-screen');
+                    const successMessage = successScreen.querySelector('.success-message');
+                    successMessage.textContent = window.gameConfig.successMessage;
+                    successScreen.classList.add('show');
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                lib.log('Form submission error: ' + error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                submitButton.disabled = false;
+                submitText.textContent = originalText;
+            }
+        }
+
+        // Setup editable text elements
+        function setupEditableText() {
+            document.querySelectorAll('.editable').forEach(element => {
+                element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const configKey = element.dataset.configKey;
+                    if (!configKey) return;
+
+                    const keys = configKey.split('.');
+                    let value = window.gameConfig;
+                    keys.forEach(key => {
+                        if (key.startsWith('gameConfig.')) {
+                            key = key.replace('gameConfig.', '');
+                        }
+                        value = value[key];
+                    });
+
+                    lib.editMenu.open({
+                        name: 'Edit Text',
+                        params: {
+                            'Text': {
+                                key: configKey,
+                                type: 'string',
+                                onChange: (newValue) => {
+                                    let obj = window.gameConfig;
+                                    for (let i = 0; i < keys.length - 1; i++) {
+                                        obj = obj[keys[i]];
+                                    }
+                                    obj[keys[keys.length - 1]] = newValue;
+                                    element.textContent = newValue;
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        // Apply theme colors
+        function applyTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--color-primary-bg', window.gameConfig.theme.primaryBg);
+            root.style.setProperty('--color-secondary-bg', window.gameConfig.theme.secondaryBg);
+            root.style.setProperty('--color-accent-neon', window.gameConfig.theme.accentNeon);
+            root.style.setProperty('--color-accent-secondary', window.gameConfig.theme.accentSecondary);
+        }
+
+        // Main run function
+        function run(mode) {
+            lib.log('run() called. Mode: ' + mode);
+            currentMode = mode;
+
+            // Show game parameters
+            lib.showGameParameters({
+                name: 'Auto Scanner Settings',
+                params: {
+                    'Primary Background': {
+                        key: 'gameConfig.theme.primaryBg',
+                        type: 'color',
+                        onChange: (value) => {
+                            window.gameConfig.theme.primaryBg = value;
+                            applyTheme();
+                        }
+                    },
+                    'Secondary Background': {
+                        key: 'gameConfig.theme.secondaryBg',
+                        type: 'color',
+                        onChange: (value) => {
+                            window.gameConfig.theme.secondaryBg = value;
+                            applyTheme();
+                        }
+                    },
+                    'Accent Neon': {
+                        key: 'gameConfig.theme.accentNeon',
+                        type: 'color',
+                        onChange: (value) => {
+                            window.gameConfig.theme.accentNeon = value;
+                            applyTheme();
+                        }
+                    },
+                    'Accent Secondary': {
+                        key: 'gameConfig.theme.accentSecondary',
+                        type: 'color',
+                        onChange: (value) => {
+                            window.gameConfig.theme.accentSecondary = value;
+                            applyTheme();
+                        }
+                    },
+                    'Webhook URL': {
+                        key: 'gameConfig.webhookUrl',
+                        type: 'string',
+                        onChange: (value) => {
+                            window.gameConfig.webhookUrl = value;
+                        }
+                    }
+                }
+            });
+
+            // Preload assets
+            preloadAssets();
+
+            // Apply theme
+            applyTheme();
+
+            // Initialize UI
+            initCarousel();
+            initForm();
+
+            // Update header text
+            document.getElementById('logo').textContent = window.gameConfig.branding.logo;
+            document.getElementById('title').textContent = window.gameConfig.branding.title;
+            document.getElementById('subtitle').textContent = window.gameConfig.branding.subtitle;
+
+            // Mode-specific setup
+            if (mode === 'edit') {
+                document.getElementById('game-container').classList.add('edit-mode');
+                setupEditableText();
+                
+                // Hide FAB in edit mode
+                document.getElementById('fab-container').style.display = 'none';
+            } else {
+                document.getElementById('game-container').classList.remove('edit-mode');
+                
+                // Enable form submission
+                const submitButton = document.getElementById('submit-button');
+                document.getElementById('fab-container').style.display = 'block';
+                submitButton.addEventListener('click', submitForm);
+
+                // Start ambient music
+                setTimeout(() => {
+                    playSound('ambient_background_music');
+                }, 500);
+            }
+        }
+
+        // Initialize when lib is ready
+        if (typeof lib !== 'undefined') {
+            // Wait for assets to be available
+            setTimeout(() => {
+                run('play');
+            }, 100);
+        }
+    </script>
+</body>
+</html>

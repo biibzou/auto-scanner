@@ -1,0 +1,95 @@
+{
+  "messages": [
+    {
+      "id": "initial-ai-0",
+      "content": {
+        "text": "Hey there! What kind of game do you want to create?",
+        "images": []
+      },
+      "role": "astra",
+      "timestamp": 1760684533992,
+      "type": "multimodal"
+    },
+    {
+      "id": "01K7RFKZ9R54NFY49WGR2RX5MP",
+      "content": {
+        "text": "Créer une page web unique nommée “Achat Cash Voiture”. Design sombre élégant, ambiance garage premium moderne, fond bleu/noir avec reflets métalliques, police Poppins ou Montserrat, boutons lumineux.  \nEn-tête : logo Liberthet + titre “Vendez votre voiture maintenant 💥”.  \nTexte d’accroche : “Remplis ce rapide formulaire, on te répond sous 24h maximum.”  \nSous le titre, afficher quelques images de belles voitures (style Audi, BMW, Mercedes, Range Rover) avec effet défilement horizontal.  \nFormulaire centré, clair et fluide, champs obligatoires :\n- Marque du véhicule\n- Modèle\n- Année\n- Kilométrage\n- État général (menu déroulant : Bon / Moyen / À revoir)\n- Téléphone\n- Email\n- Message libre\n- Upload photo du véhicule\nBouton principal : “Envoyer ma demande 🚗”.\nAction du formulaire : POST vers 👉 https://biibzou.app.n8n.cloud/webhook/autoform  \nAprès envoi : afficher “✅ Merci ! Je vous réponds dans les 24 heures maximum.”  \nDesign responsive mobile/desktop, animation légère d’entrée, ambiance bleue néon futuriste. Pas d’estimation, juste collecte des infos.",
+        "images": []
+      },
+      "role": "user",
+      "timestamp": 1760684539192,
+      "type": "multimodal"
+    },
+    {
+      "id": "24c373f3-5ae1-4197-921b-9620ce5e636f",
+      "content": {
+        "text": "That sounds like an amazing vision for a sleek website! However, I'm Astra, your game brainstorming assistant. My superpower is coming up with fun game ideas for you.\n\nWould you like to brainstorm a game instead? We could start with some vibes!",
+        "images": []
+      },
+      "role": "astra",
+      "timestamp": 1760684540912.5186,
+      "type": "multimodal"
+    },
+    {
+      "id": "01K7RFV57V1BZEWPEE966DKPGX",
+      "content": {
+        "text": "non cree ce ke jai di ludiqueeme,nt genre jeu video formulaire sur smartphone web app",
+        "images": []
+      },
+      "role": "user",
+      "timestamp": 1760684774651,
+      "type": "multimodal"
+    },
+    {
+      "id": "379bdf69-f964-4500-afef-17d235dd829f",
+      "content": {
+        "text": "Ah, je vois ! Tu veux gamifier l'expérience du formulaire de vente de voiture, le transformer en un jeu vidéo interactif pour smartphone. J'adore cette idée !\n\nVoici trois concepts pour transformer ta page \"Achat Cash Voiture\" en une expérience ludique :\n\n<option>\n<title>Garage Guru</title>\nInspecte et diagnostique ta voiture virtuellement dans un garage futuriste pour en déterminer la valeur, en remplissant les infos du formulaire à travers des mini-jeux.\n</option>\n\n<option>\n<title>Auto Scanner</title>\nUtilise une interface de scan high-tech pour révéler les détails de ton véhicule, chaque champ du formulaire étant un segment à analyser et à compléter.\n</option>\n\n<option>\n<title>Négociant Virtuel</title>\nInteragis avec une IA de concessionnaire qui te guide à travers une série de questions et de défis visuels pour collecter les informations de ta voiture.\n</option>",
+        "images": []
+      },
+      "role": "astra",
+      "timestamp": 1760684785152.4546,
+      "type": "multimodal"
+    },
+    {
+      "id": "01K7RFWCPZEMZJF0DVYCARAQGH",
+      "content": {
+        "text": "**Auto Scanner**: Utilise une interface de scan high-tech pour révéler les détails de ton véhicule, chaque champ du formulaire étant un segment à analyser et à compléter.",
+        "images": []
+      },
+      "role": "user",
+      "timestamp": 1760684815071,
+      "type": "multimodal"
+    },
+    {
+      "id": "7e80d93b-6d5c-4420-86fa-3276efce6df7",
+      "content": {
+        "title": "Auto Scanner",
+        "description": "\"Auto Scanner\" est un jeu interactif où tu utilises une interface de scan high-tech pour virtuellement analyser ta voiture. Chaque champ du formulaire devient un segment à scanner et à compléter, transformant la collecte d'informations en une exploration ludique.\n\n• Une ambiance bleue néon futuriste avec des reflets métalliques donne vie au garage premium.\n• Des animations fluides et des effets de scan révèlent les informations de ton véhicule à chaque étape.",
+        "image_urls": null
+      },
+      "role": "astra",
+      "timestamp": 1760684829899.262,
+      "type": "game_design"
+    },
+    {
+      "id": "f58e8fb9-befa-485d-a054-fad0173a4583",
+      "content": {
+        "text": "Ok, create it!",
+        "images": []
+      },
+      "role": "user",
+      "timestamp": 1760684835234.9163,
+      "type": "multimodal"
+    },
+    {
+      "id": "0389ffdc-0ced-4b55-9755-f34dd90978ae",
+      "content": {
+        "text": "J'ai créé **Auto Scanner** - ton formulaire de vente de voiture transformé en expérience de scan futuriste ! 🚗✨\n\nChaque champ du formulaire devient un segment interactif à analyser avec des animations de scan high-tech. Remplis les infos de ta voiture (marque, modèle, kilométrage, etc.) et regarde la barre de progression monter jusqu'à 100%. Une fois complété, clique sur **\"Envoyer ma demande 🚗\"** pour soumettre directement à ton webhook.\n\nEn mode **Edit**, personnalise ton logo Liberthet, change les couleurs néon (bleu/cyan par défaut), ajuste les images de voitures dans le carousel, ou modifie les textes et l'URL du webhook. Lance-le et teste cette expérience de formulaire gamifiée ! 💥",
+        "images": []
+      },
+      "role": "astra",
+      "timestamp": 1760685252661.8513,
+      "type": "multimodal"
+    }
+  ]
+}
